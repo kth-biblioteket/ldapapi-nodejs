@@ -17,7 +17,7 @@ const ActiveDirectory = require('activedirectory');
 
 var config = { url: process.env.HOST,
                 baseDN: process.env.BASEDN,
-                username: process.env.USERNAME,
+                username: process.env.LDAPUSER,
                 password: process.env.PASSWORD,
                 tlsOptions: {
                     rejectUnauthorized: false
