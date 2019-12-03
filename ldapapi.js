@@ -1,6 +1,6 @@
 /**
  *
- * API mot LDAP
+ * API mot LDAP.
  *
  */
 
