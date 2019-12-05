@@ -7,9 +7,11 @@
 require('dotenv').config()
 var express = require("express");
 var bodyParser = require("body-parser");
+var jwt = require("jsonwebtoken");
 //var xml = require('xml');
 //var jsonxml = require('jsontoxml');
 var js2xmlparser = require("js2xmlparser");
+var VerifyToken = require('./VerifyToken');
 
 var app = express();
 
@@ -33,17 +35,22 @@ var config = { url: process.env.HOST,
             }
 var ad = new ActiveDirectory(config);
 
-
-
 app.set('apikeyread', process.env.APIKEYREAD);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, contentType,Content-Type, Accept, Authorization");
+	var whitelist = ['kth.se', 'lib.kth.se']
+  	var host = req.get('host');
+
+	whitelist.forEach(function(val, key){
+		if (host.indexOf(val) > -1){
+			res.setHeader('Access-Control-Allow-Origin', host);
+		}
+	});
+	res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+	res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, contentType,Content-Type, Accept, Authorization");
 	next();
 });
 
@@ -53,26 +60,38 @@ apiRoutes.get('/', function(req, res) {
 	res.send('Hello! The API is at https://lib.kth.se/ldap/api/v1');
 });
 
-apiRoutes.use(function(req, res, next) {
-	var token = req.body.token || req.query.token || req.headers['x-access-token'];
-	if (token) {
-		  if(token != app.get('apikeyread')){
-			  return res.json({ success: false, message: 'Failed to authenticate token.' });
-		  } else {
-			  next();
-		  }
-	} else {
-	  return res.status(403).send({
-		  success: false,
-		  message: 'No token provided.'
+
+apiRoutes.post("/login", function(req, res) {
+	ad.authenticate(req.body.username, req.body.password, function(err, auth) {
+		if (err) {
+		  	res.status(400).send({ auth: false, error: err });
+		} else {
+			if (auth) {
+			var token = jwt.sign({ id: req.body.username }, process.env.SECRET, {
+				expiresIn: 86400
+			});
+			
+			res.status(200).send({ auth: true, token: token });
+			}
+			else {
+			res.status(401).send({ auth: false, token: null });
+			}
+		}
 	  });
-	}
 });
 
-apiRoutes.get("/kthid/:kthid/", function(req , res){
+apiRoutes.get('/logout', function(req, res) {
+	res.status(200).send({ auth: false, token: null });
+});
+
+apiRoutes.get("/kthid/:kthid/", VerifyToken, function(req , res, next){
 	ad.find('ugKthid=' + req.params.kthid, function(err, results) {
-		if ((err) || (! results)) {
-			console.log('ERROR: ' + JSON.stringify(err));
+		if ((err)) {
+			res.status(400).send({ 'result': 'Error: ' + err});
+			return;
+		}
+		if ((! results)) {
+			res.status(400).send({ 'result': 'kthid ' + req.params.kthid + ' not found'});
 			return;
 		}
 		if(results.users) {
@@ -83,10 +102,14 @@ apiRoutes.get("/kthid/:kthid/", function(req , res){
 	});
 });
 
-apiRoutes.get("/account/:account/", function(req , res){
+apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
     ad.find('sAMAccountName=' + req.params.account, function(err, results) {
-		if ((err) || (! results)) {
-			console.log('ERROR: ' + JSON.stringify(err));
+		if ((err)) {
+			res.status(400).send({ 'result': 'Error: ' + err});
+			return;
+		}
+		if ((! results)) {
+			res.status(400).send({ 'result': 'Account ' + req.params.account + ' not found'});
 			return;
 		}
 		if(results.users) {
