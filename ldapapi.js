@@ -29,12 +29,11 @@ var config = { url: process.env.HOST,
                     'userPrincipalName', 'sAMAccountName', 'mail',
                     'lockoutTime', 'whenCreated', 'pwdLastSet', 'userAccountControl',
                     'employeeID', 'sn', 'givenName', 'initials', 'cn', 'displayName',
-                    'comment', 'description', 'memberOf','ugAffiliation'],
+                    'comment', 'description', 'memberOf', 'ugAffiliation', 'telephoneNumber'],
                     group: [ 'dn', 'cn', 'description' ]
                 }
             }
 var ad = new ActiveDirectory(config);
-
 app.set('apikeyread', process.env.APIKEYREAD);
 
 app.use(bodyParser.urlencoded({ extended: true }));
