@@ -27,9 +27,11 @@ var config = { url: process.env.HOST,
                 attributes: {
                     user: [ 'dn',
                     'userPrincipalName', 'sAMAccountName', 'mail',
-                    'lockoutTime', 'whenCreated', 'pwdLastSet', 'userAccountControl',
-                    'employeeID', 'sn', 'givenName', 'initials', 'cn', 'displayName',
-                    'comment', 'description', 'memberOf', 'ugAffiliation', 'telephoneNumber'],
+                    'lockoutTime', 'whenCreated', 'pwdLastSet', 'lastLogon', 'userAccountControl',
+                    'employeeID', 'employeeType', 'sn', 'givenName', 'initials', 'cn', 'displayName',
+					'comment', 'description', 'title', 'department', 'memberOf', 'ugAffiliation', 
+					'streetAddress', 'l', 'postalCode', 'c', 'telephoneNumber', 'homePhone',
+					'proxyAddresses', 'extensionAttribute1', 'extensionAttribute2'],
                     group: [ 'dn', 'cn', 'description' ]
                 }
             }
