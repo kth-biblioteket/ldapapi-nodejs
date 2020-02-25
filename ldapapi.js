@@ -1,14 +1,14 @@
 require('dotenv').config()
-var express = require("express");
-var bodyParser = require("body-parser");
-var jwt = require("jsonwebtoken");
-var VerifyToken = require('./VerifyToken');
+const express = require("express");
+const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
+const VerifyToken = require('./VerifyToken');
 
-var app = express();
+const app = express();
 
 const ActiveDirectory = require('activedirectory');
 
-var config = { url: process.env.HOST,
+const config = { url: process.env.HOST,
                 baseDN: process.env.BASEDN,
                 username: process.env.LDAPUSER,
                 password: process.env.PASSWORD,
@@ -29,7 +29,7 @@ var config = { url: process.env.HOST,
                     group: [ 'dn', 'cn', 'description' ]
                 }
             }
-var ad = new ActiveDirectory(config);
+const ad = new ActiveDirectory(config);
 app.set('apikeyread', process.env.APIKEYREAD);
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -112,7 +112,6 @@ apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
 		} else {
 			res.json({'result': 'nothing'});
 		}
-		results = null;
     });
 });
 
