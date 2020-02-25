@@ -1,16 +1,7 @@
-/**
- *
- * API mot LDAP.
- *
- */
-
 require('dotenv').config()
 var express = require("express");
 var bodyParser = require("body-parser");
 var jwt = require("jsonwebtoken");
-//var xml = require('xml');
-//var jsonxml = require('jsontoxml');
-var js2xmlparser = require("js2xmlparser");
 var VerifyToken = require('./VerifyToken');
 
 var app = express();
@@ -118,12 +109,10 @@ apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
 		}
 		if(results.users) {
 			res.json({"ugusers" :results.users[0]});
-			//xmlres = js2xmlparser.parse("uguser", users.users[0]);
-			//res.type('application/xml');
-            //res.send(xmlres);
 		} else {
 			res.json({'result': 'nothing'});
 		}
+		results = null;
     });
 });
 
