@@ -29,7 +29,7 @@ const config = { url: process.env.HOST,
                     group: [ 'dn', 'cn', 'description' ]
                 }
             }
-const ad = new ActiveDirectory(config);
+
 app.set('apikeyread', process.env.APIKEYREAD);
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -57,6 +57,7 @@ apiRoutes.get('/', function(req, res) {
 
 
 apiRoutes.post("/login", function(req, res) {
+	let ad = new ActiveDirectory(config);
 	ad.authenticate(req.body.username, req.body.password, function(err, auth) {
 		if (err) {
 		  	res.status(400).send({ auth: false, error: err });
@@ -80,6 +81,7 @@ apiRoutes.get('/logout', function(req, res) {
 });
 
 apiRoutes.get("/kthid/:kthid/", VerifyToken, function(req , res, next){
+	let ad = new ActiveDirectory(config);
 	ad.find('ugKthid=' + req.params.kthid, function(err, results) {
 		if ((err)) {
 			res.status(400).send({ 'result': 'Error: ' + err});
@@ -98,6 +100,7 @@ apiRoutes.get("/kthid/:kthid/", VerifyToken, function(req , res, next){
 });
 
 apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
+	let ad = new ActiveDirectory(config);
     ad.find('sAMAccountName=' + req.params.account, function(err, results) {
 		if ((err)) {
 			res.status(400).send({ 'result': 'Error: ' + err});
@@ -112,7 +115,8 @@ apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
 		} else {
 			res.json({'result': 'nothing'});
 		}
-    });
+	});
+	ad = null;
 });
 
 app.use('/ldap/api/v1', apiRoutes);
