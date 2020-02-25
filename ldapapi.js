@@ -6,6 +6,8 @@ const VerifyToken = require('./VerifyToken');
 
 const app = express();
 
+const ActiveDirectory = require('activedirectory');
+
 const config = { url: process.env.HOST,
                 baseDN: process.env.BASEDN,
                 username: process.env.LDAPUSER,
@@ -27,6 +29,7 @@ const config = { url: process.env.HOST,
                     group: [ 'dn', 'cn', 'description' ]
                 }
             }
+const ad = new ActiveDirectory(config);
 
 app.set('apikeyread', process.env.APIKEYREAD);
 
@@ -55,8 +58,6 @@ apiRoutes.get('/', function(req, res) {
 
 
 apiRoutes.post("/login", function(req, res) {
-	let ActiveDirectory = require('activedirectory');
-	let ad = new ActiveDirectory(config);
 	ad.authenticate(req.body.username, req.body.password, function(err, auth) {
 		if (err) {
 		  	res.status(400).send({ auth: false, error: err });
@@ -72,9 +73,7 @@ apiRoutes.post("/login", function(req, res) {
 			res.status(401).send({ auth: false, token: null });
 			}
 		}
-	});
-	ad = null;
-	ActiveDirectory = null;
+	  });
 });
 
 apiRoutes.get('/logout', function(req, res) {
@@ -82,8 +81,6 @@ apiRoutes.get('/logout', function(req, res) {
 });
 
 apiRoutes.get("/kthid/:kthid/", VerifyToken, function(req , res, next){
-	let ActiveDirectory = require('activedirectory');
-	let ad = new ActiveDirectory(config);
 	ad.find('ugKthid=' + req.params.kthid, function(err, results) {
 		if ((err)) {
 			res.status(400).send({ 'result': 'Error: ' + err});
@@ -99,13 +96,9 @@ apiRoutes.get("/kthid/:kthid/", VerifyToken, function(req , res, next){
 			res.json({'result': 'nothing'});
 		}
 	});
-	ad = null;
-	ActiveDirectory = null;
 });
 
 apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
-	let ActiveDirectory = require('activedirectory');
-	let ad = new ActiveDirectory(config);
     ad.find('sAMAccountName=' + req.params.account, function(err, results) {
 		if ((err)) {
 			res.status(400).send({ 'result': 'Error: ' + err});
@@ -120,9 +113,7 @@ apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
 		} else {
 			res.json({'result': 'nothing'});
 		}
-	});
-	ad = null;
-	ActiveDirectory = null;
+    });
 });
 
 app.use('/ldap/api/v1', apiRoutes);
