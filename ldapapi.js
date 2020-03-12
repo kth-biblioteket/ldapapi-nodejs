@@ -116,6 +116,24 @@ apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
     });
 });
 
+apiRoutes.get("/users/:name/", VerifyToken, function(req, res, next){
+    ad.find('cn=' + req.params.name , function(err, results) {
+		if ((err)) {
+			res.status(400).send({ 'result': 'Error: ' + err});
+			return;
+		}
+		if ((! results)) {
+			res.status(400).send({ 'result': 'Users ' + req.params.users + ' not found'});
+			return;
+		}
+		if(results.users) {
+			res.json({"ugusers" :results.users});
+		} else {
+			res.json({'result': 'nothing'});
+		}
+    });
+});
+
 app.use('/ldap/api/v1', apiRoutes);
 
 var server = app.listen(process.env.PORT || 3002, function () {
