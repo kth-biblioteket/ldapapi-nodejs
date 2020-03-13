@@ -87,7 +87,7 @@ apiRoutes.get("/kthid/:kthid/", VerifyToken, function(req , res, next){
 			return;
 		}
 		if ((! results)) {
-			res.status(400).send({ 'result': 'kthid ' + req.params.kthid + ' not found'});
+			res.status(201).send({ 'result': 'kthid ' + req.params.kthid + ' not found'});
 			return;
 		}
 		if(results.users) {
@@ -105,7 +105,7 @@ apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
 			return;
 		}
 		if ((! results)) {
-			res.status(400).send({ 'result': 'Account ' + req.params.account + ' not found'});
+			res.status(201).send({ 'result': 'Account ' + req.params.account + ' not found'});
 			return;
 		}
 		if(results.users) {
@@ -123,7 +123,7 @@ apiRoutes.get("/users/:name/", VerifyToken, function(req, res, next){
 			return;
 		}
 		if ((! results)) {
-			res.status(400).send({ 'result': 'Users ' + req.params.users + ' not found'});
+			res.status(201).send({ 'result': 'Users ' + req.params.users + ' not found'});
 			return;
 		}
 		if(results.users) {
