@@ -39,7 +39,7 @@ app.use(bodyParser.json());
 app.use(function (req, res, next) {
 	var whitelist = ['kth.se', 'lib.kth.se', 'kth.diva-portal.org']
   	var host = req.get('host');
-
+	console.log(host);
 	whitelist.forEach(function(val, key){
 		if (host.indexOf(val) > -1){
 			res.setHeader('Access-Control-Allow-Origin', host);
