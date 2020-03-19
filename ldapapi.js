@@ -194,7 +194,7 @@ apiRoutes.post("/divamonkey", VerifyToken, function(req, res) {
 								"letaanstallda": process.env.LETAANSTALLDAAPIKEY,
 								"scopus": process.env.SCOPUSAPIKEY,
 							},
-							"token": token
+							"token": req.token
 						});
 				} else {
 					res.status(201).send({"result" :'not authorized monkeyuser'});
