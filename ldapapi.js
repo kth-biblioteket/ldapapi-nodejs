@@ -81,6 +81,7 @@ apiRoutes.post("/login", function(req, res) {
 	  });
 });
 
+
 apiRoutes.get('/logout', function(req, res) {
 	res.status(200).send({ auth: false, token: null });
 });
@@ -137,6 +138,22 @@ apiRoutes.get("/users/:name/", VerifyToken, function(req, res, next){
 			res.json({'result': 'nothing'});
 		}
     });
+});
+
+/**
+ * 
+ * Hämta apinycklar för divaapan
+ * 
+ */
+apiRoutes.post("/divamonkey", VerifyToken, function(req, res) {
+	res.json(
+		{"apikeys" : {
+				"ldap": process.env.LDAPAPIKEY,
+				"orcid": process.env.ORCIDAPIKEY,
+				"letaanstallda": process.env.LETAANSTALLDAAPIKEY,
+				"scopus": process.env.SCOPUSAPIKEY,
+			}
+		});
 });
 
 app.use('/ldap/api/v1', apiRoutes);
