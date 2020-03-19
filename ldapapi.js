@@ -184,15 +184,20 @@ apiRoutes.post("/divamonkey", VerifyToken, function(req, res) {
 			return;
 		}
 		if(results.users) {
-			if(results.users[0].kthPAGroupMembership.indexOf('pa.anstallda.T.TR') !== -1 ) {
-				res.json(
-					{"apikeys" : {
-							"ldap": process.env.LDAPAPIKEY,
-							"orcid": process.env.ORCIDAPIKEY,
-							"letaanstallda": process.env.LETAANSTALLDAAPIKEY,
-							"scopus": process.env.SCOPUSAPIKEY,
-						}
-					});
+			if(results.users[0].kthPAGroupMembership) {
+				if(results.users[0].kthPAGroupMembership.indexOf('pa.anstallda.T.TR') !== -1 ) {
+					res.json(
+						{"apikeys" : {
+								"ldap": process.env.LDAPAPIKEY,
+								"orcid": process.env.ORCIDAPIKEY,
+								"letaanstallda": process.env.LETAANSTALLDAAPIKEY,
+								"scopus": process.env.SCOPUSAPIKEY,
+							}
+						});
+				} else {
+					res.status(201).send({"result" :'not authorized monkeyuser'});
+				}
+
 			} else {
 				res.status(201).send({"result" :'not authorized monkeyuser'});
 			}
