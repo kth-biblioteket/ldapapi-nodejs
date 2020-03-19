@@ -37,18 +37,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //CORS
+
 app.use(function (req, res, next) {
 	var whitelist = ['kth.se', 'lib.kth.se', 'kth.diva-portal.org']
-  	var origin = req.get('origin');
+	/*  
+	var origin = req.get('origin');
 	whitelist.forEach(function(val, key){
 		if (origin.indexOf(val) > -1){
 			res.setHeader('Access-Control-Allow-Origin', origin);
 		}
 	});
+	*/
+	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
 	res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, contentType,Content-Type, Accept, Authorization");
 	next();
 });
+
 
 var apiRoutes = express.Router();
 
