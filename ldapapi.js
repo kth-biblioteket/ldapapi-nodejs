@@ -36,13 +36,13 @@ app.set('apikeyread', process.env.APIKEYREAD);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+//CORS
 app.use(function (req, res, next) {
 	var whitelist = ['kth.se', 'lib.kth.se', 'kth.diva-portal.org']
-  	var host = req.get('host');
-	console.log(host);
+  	var origin = req.get('origin');
 	whitelist.forEach(function(val, key){
-		if (host.indexOf(val) > -1){
-			res.setHeader('Access-Control-Allow-Origin', host);
+		if (origin.indexOf(val) > -1){
+			res.setHeader('Access-Control-Allow-Origin', origin);
 		}
 	});
 	res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
