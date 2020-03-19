@@ -37,7 +37,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
-	var whitelist = ['kth.se', 'lib.kth.se']
+	var whitelist = ['kth.se', 'lib.kth.se', 'kth.diva-portal.org']
   	var host = req.get('host');
 
 	whitelist.forEach(function(val, key){
