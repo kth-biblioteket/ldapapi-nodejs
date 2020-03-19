@@ -69,7 +69,7 @@ apiRoutes.post("/login", function(req, res) {
 		} else {
 			if (auth) {
 				var token = jwt.sign({ id: req.body.username }, process.env.SECRET, {
-					expiresIn: "60s"
+					expiresIn: "7d"
 				});
 			
 				res.status(200).send({ auth: true, token: token });
