@@ -11,6 +11,10 @@ function verifyToken(req, res, next) {
             if (err)
                 return res.status(401).send({ auth: false, message: 'Failed to authenticate token, ' + err.message });
             req.userprincipalname = decoded.id;
+            //Skapa ny token för varje validerad request
+            req.token = jwt.sign({ id: req.userprincipalname }, process.env.SECRET, {
+                expiresIn: "7d"
+            });
             next();
         });
     } else {
