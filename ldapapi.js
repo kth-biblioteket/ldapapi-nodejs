@@ -68,14 +68,14 @@ apiRoutes.post("/login", function(req, res) {
 		  	res.status(400).send({ auth: false, error: err });
 		} else {
 			if (auth) {
-			var token = jwt.sign({ id: req.body.username }, process.env.SECRET, {
-				expiresIn: 86400
-			});
+				var token = jwt.sign({ id: req.body.username }, process.env.SECRET, {
+					expiresIn: 86400
+				});
 			
-			res.status(200).send({ auth: true, token: token });
+				res.status(200).send({ auth: true, token: token });
 			}
 			else {
-			res.status(401).send({ auth: false, token: null });
+				res.status(401).send({ auth: false, token: null });
 			}
 		}
 	  });
@@ -122,6 +122,24 @@ apiRoutes.get("/account/:account/", VerifyToken, function(req, res, next){
     });
 });
 
+apiRoutes.get("/userprincipalname/:userprincipalname/", VerifyToken, function(req, res, next){
+    ad.find('userPrincipalName=' + req.params.userprincipalname, function(err, results) {
+		if ((err)) {
+			res.status(400).send({ 'result': 'Error: ' + err});
+			return;
+		}
+		if ((! results)) {
+			res.status(201).send({ 'result': 'Userprincipalname ' + req.params.userprincipalname + ' not found'});
+			return;
+		}
+		if(results.users) {
+			res.json({"ugusers" :results.users[0]});
+		} else {
+			res.json({'result': 'nothing'});
+		}
+    });
+});
+
 apiRoutes.get("/users/:name/", VerifyToken, function(req, res, next){
     ad.find('cn=' + req.params.name , function(err, results) {
 		if ((err)) {
@@ -144,16 +162,44 @@ apiRoutes.get("/users/:name/", VerifyToken, function(req, res, next){
  * 
  * Hämta apinycklar för divaapan
  * 
+ * Vilka ska ha behörighet till dem?
+ * 
+ * Alla på bibblan ()
+ * 
+ * pa.anstallda.T.TR	KTH BIBLIOTEKET	
+ * pa.anstallda.T.TRAA	VERSAMHETSSTÖD	
+ * pa.anstallda.T.TRAB	BIBL.SERVICE & LÄRANDE STÖD	
+ * pa.anstallda.T.TRAC	PUBLICERINGENS INFRASTRUKTUR
+ * 
  */
 apiRoutes.post("/divamonkey", VerifyToken, function(req, res) {
-	res.json(
-		{"apikeys" : {
-				"ldap": process.env.LDAPAPIKEY,
-				"orcid": process.env.ORCIDAPIKEY,
-				"letaanstallda": process.env.LETAANSTALLDAAPIKEY,
-				"scopus": process.env.SCOPUSAPIKEY,
+	//req.userprincipalname = hämtas från jwt-token
+	ad.find('userPrincipalName=' + req.userprincipalname, function(err, results) {
+		if ((err)) {
+			res.status(400).send({ 'result': 'Error: ' + err});
+			return;
+		}
+		if ((! results)) {
+			res.status(201).send({ 'result': 'Userprincipalname ' + req.params.userprincipalname + ' not found'});
+			return;
+		}
+		if(results.users) {
+			if(results.users[0].kthPAGroupMembership.indexOf('pa.anstallda.T.TR') !== -1 ) {
+				res.json(
+					{"apikeys" : {
+							"ldap": process.env.LDAPAPIKEY,
+							"orcid": process.env.ORCIDAPIKEY,
+							"letaanstallda": process.env.LETAANSTALLDAAPIKEY,
+							"scopus": process.env.SCOPUSAPIKEY,
+						}
+					});
+			} else {
+				res.status(201).send({"result" :'not authorized monkeyuser'});
 			}
-		});
+		} else {
+			res.status(400).send({'result': 'General error'});
+		}
+    });
 });
 
 app.use('/ldap/api/v1', apiRoutes);
