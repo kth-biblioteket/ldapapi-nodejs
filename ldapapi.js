@@ -97,7 +97,7 @@ apiRoutes.get("/kthid/:kthid/", VerifyToken, function(req , res, next){
 			return;
 		}
 		if(results.users) {
-			res.json({"ugusers" :results.users[0]});
+			res.json({"ugusers" :results.users});
 		} else {
 			res.json({'result': 'nothing'});
 		}
